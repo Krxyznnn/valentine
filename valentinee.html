@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? ❤️</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffebee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            transition: background-color 0.8s;
+        }
+
+        /* Layar Awal untuk memicu Autoplay */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffebee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        .open-btn {
+            background-color: #ff4081;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(255, 64, 129, 0.4);
+            cursor: pointer;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #main-content {
+            display: none; /* Sembunyi sampai tombol Open diklik */
+            position: relative;
+            z-index: 20;
+        }
+
+        #spam-container {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 400px;
+            border: 2px solid #ffcdd2;
+        }
+
+        h1 { color: #d32f2f; font-size: 2.5rem; margin-bottom: 10px; }
+        p { color: #555; margin-bottom: 25px; }
+
+        .buttons { display: flex; gap: 20px; justify-content: center; }
+
+        button {
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        #btnYes { background-color: #ff4081; color: white; box-shadow: 0 4px 10px rgba(255, 64, 129, 0.3); }
+        #btnNo { background-color: #bdbdbd; color: white; }
+
+        .extra-yes {
+            position: absolute;
+            background-color: #ff4081;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: 2px solid white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: pop 0.25s ease-out forwards;
+            pointer-events: auto;
+        }
+
+        .heart-fall {
+            position: fixed;
+            top: -10%;
+            z-index: 5;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        @keyframes pop { 
+            0% { transform: scale(0); } 
+            100% { transform: scale(1); } 
+        }
+
+        .final-screen {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            animation: pop 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay" onclick="startEverything()">
+        <button class="open-btn">Click to Open Message 💌</button>
+    </div>
+
+    <audio id="myAudio" loop>
+        <source src="lagu.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="spam-container"></div>
+
+    <div id="main-content">
+        <div class="container" id="mainCard">
+            <h1>Will You Be My Valentine? ❤️</h1>
+            <p>Pilih salah satu ya (nggak boleh nolak!) :P</p>
+            <div class="buttons">
+                <button id="btnYes" onclick="celebrate()">YES!</button>
+                <button id="btnNo" onclick="spamYes()">No</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById("myAudio");
+        const spamContainer = document.getElementById("spam-container");
+        const overlay = document.getElementById("overlay");
+        const mainContent = document.getElementById("main-content");
+
+        // Memulai Musik & Membuka Pesan
+        function startEverything() {
+            audio.play().catch(e => console.log("Autoplay blocked, needs click."));
+            overlay.style.display = "none";
+            mainContent.style.display = "block";
+        }
+
+        // Efek Hujan Hati
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart-fall");
+            const shapes = ["❤️", "🌸", "💖", "✨", "💕"];
+            heart.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+            heart.style.fontSize = Math.random() * 20 + 20 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        // Efek Mengetik
+        function typeWriter(text, elementId, speed) {
+            let i = 0;
+            const element = document.getElementById(elementId);
+            element.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function celebrate() {
+            // Bersihkan semua tombol spam YES
+            spamContainer.innerHTML = "";
+            document.body.style.backgroundColor = "#ff4081";
+            
+            // Mulai hujan hati terus menerus
+            setInterval(createHeart, 150);
+
+            // Ganti isi main content dengan teks ngetik
+            mainContent.innerHTML = `
+                <div class="final-screen">
+                    <h1 id="typing-title" style="font-size: 2.5rem; color: #d32f2f; min-height: 120px; line-height: 1.2;"></h1>
+                    <p id="typing-sub" style="font-size: 1.3rem; color: #555; min-height: 30px;"></p>
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHIwd3pqc3Z4emF3Z3N6NXp6Z3Z3eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KztT2c4u8mYYUiMKdJ/giphy.gif" width="250" style="margin-top: 20px;">
+                </div>
+            `;
+
+            // Jalankan animasi ngetik (sinkron dengan lagu)
+            typeWriter("Happy Valentine, My Love Of My Life.", "typing-title", 100);
+            
+            setTimeout(() => {
+                typeWriter("I love you more than words can say! please stay healthy and always stay with me :D! Lovee u, lovee!<3> 🥰❤️", "typing-sub", 70);
+            }, 4000); // Muncul setelah judul selesai diketik
+        }
+
+        function spamYes() {
+            for (let i = 0; i < 15; i++) {
+                const btn = document.createElement("button");
+                btn.innerHTML = "YES!";
+                btn.className = "extra-yes";
+                const x = Math.random() * (window.innerWidth - 120);
+                const y = Math.random() * (window.innerHeight - 60);
+                btn.style.left = x + "px";
+                btn.style.top = y + "px";
+                const size = 1 + Math.random() * 0.5;
+                btn.style.transform = `scale(${size})`;
+                btn.onclick = celebrate;
+                spamContainer.appendChild(btn);
+            }
+        }
+    </script>
+</body>
+</html>
